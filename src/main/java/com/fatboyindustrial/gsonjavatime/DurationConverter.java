@@ -26,6 +26,7 @@ package com.fatboyindustrial.gsonjavatime;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
@@ -92,6 +93,28 @@ public class DurationConverter implements JsonSerializer<Duration>, JsonDeserial
     if (json.isJsonNull())
     {
       return null;
+    }
+
+    if (json.isJsonObject())
+    {
+      JsonObject jsonObject = (JsonObject) json;
+      if (jsonObject.has("seconds"))
+      {
+        JsonElement secondsJsonElement = jsonObject.get("seconds");
+        if (secondsJsonElement == null || secondsJsonElement.isJsonNull())
+        {
+          return null;
+        }
+
+        JsonElement nanosJsonElement = jsonObject.get("nanos");
+        long nanos = 0L;
+        if (nanosJsonElement != null && !nanosJsonElement.isJsonNull())
+        {
+          nanos = nanosJsonElement.getAsLong();
+        }
+
+        return Duration.ofSeconds(secondsJsonElement.getAsLong(), nanos);
+      }
     }
 
     final String zoneIdentifier = json.getAsString();

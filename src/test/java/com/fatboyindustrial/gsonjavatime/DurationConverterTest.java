@@ -74,6 +74,20 @@ public class DurationConverterTest
   }
 
   /**
+   * Tests that deserialising from JSON works.
+   */
+  @Test
+  public void testDeserialisationBackwardsCompatible()
+  {
+    final Gson gson = registerDuration(new GsonBuilder()).create();
+
+    final String json = "{\"seconds\": 100, \"nanos\": 0}";
+    final Duration duration = gson.fromJson(json, Duration.class);
+
+    assertThat(duration, is(Duration.of(100, ChronoUnit.SECONDS)));
+  }
+
+  /**
    * Tests that deserialising from JSON works with an empty value.
    */
   @Test
